@@ -98,7 +98,7 @@ function App() {
             <HStack p={2} bgColor="rgba(51, 51, 51, 0.7)">
               <VStack p={2}>
                 <Text fontSize={"xl"}>{weather?.name}, {weather?.sys.country}</Text>
-                <Image src={`http://openweathermap.org/img/wn/${weather?.weather[0].icon}@2x.png`}></Image>
+                <Image src={`https://openweathermap.org/img/wn/${weather?.weather[0].icon}@2x.png`}></Image>
                 <Text fontSize={"md"}>{weather?.weather[0].description}</Text>
               </VStack>
               <Spacer />
