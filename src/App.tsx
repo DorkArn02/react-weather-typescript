@@ -56,7 +56,7 @@ function App() {
       return CloudyBck
     } else if (weather.weather[0].description.toLowerCase().includes("clear")) {
       return ClearBck
-    } else if (weather.weather[0].description.toLowerCase().includes("rain")) {
+    } else if (weather.weather[0].description.toLowerCase().includes("rain") || weather.weather[0].description.toLowerCase().includes("drizzle")) {
       return RainBck
     } else if (weather.weather[0].description.toLowerCase().includes("thunderstorm")) {
       return ThunderBck
