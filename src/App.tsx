@@ -30,7 +30,7 @@ function App() {
     }
     setResults([])
     if (e.key === "Enter") {
-      const response = await axios.get(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=10&appid=${API_KEY}`)
+      const response = await axios.get(`https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=10&appid=${API_KEY}`)
       const data = response.data as Array<GeolocationInterface>
       data.map(i => {
         setResults(prev => [...(prev || []), { label: `${i.name}, ${i.country}`, value: { lat: i.lat, lon: i.lon } }])
