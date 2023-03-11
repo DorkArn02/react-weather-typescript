@@ -1,4 +1,4 @@
-import { Box, Flex, Grid, Heading, HStack, Image, Input, InputGroup, InputLeftElement, Select, Spacer, StackDivider, Text, VStack } from "@chakra-ui/react"
+import { Box, Button, Flex, Grid, Heading, HStack, IconButton, Image, Input, InputGroup, InputLeftElement, Select, Spacer, StackDivider, Text, VStack } from "@chakra-ui/react"
 import Bck from "./assets/background.jpg"
 import ClearBck from "./assets/clear.webp"
 import CloudyBck from "./assets/cloudy.jpg"
@@ -6,7 +6,7 @@ import MistBck from "./assets/mist.jpg"
 import RainBck from "./assets/rain.jpg"
 import SnowBck from "./assets/snow.jpg"
 import ThunderBck from "./assets/thunder.jpg"
-
+import { IoLocationOutline } from "react-icons/io5"
 import axios from "axios"
 import React, { useState } from "react"
 import { FaSearch, FaWind } from "react-icons/fa"
@@ -23,19 +23,31 @@ function App() {
   const [weather, setWeather] = useState<WeatherData>()
   const [metric, setMetric] = useState<boolean>(true)
 
-  const getGeolocation = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const getGeolocation = async () => {
+    const response = await axios.get(`https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=10&appid=${API_KEY}`)
+    const data = response.data as Array<GeolocationInterface>
+    data.map(i => {
+      setResults(prev => [...(prev || []), { label: `${i.name}, ${i.country}`, value: { lat: i.lat, lon: i.lon } }])
+    })
+  }
+
+  const handleGeolocationEnter = async (e: React.KeyboardEvent<HTMLInputElement>) => {
 
     if (city.length === 0) {
       return;
     }
     setResults([])
     if (e.key === "Enter") {
-      const response = await axios.get(`https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=10&appid=${API_KEY}`)
-      const data = response.data as Array<GeolocationInterface>
-      data.map(i => {
-        setResults(prev => [...(prev || []), { label: `${i.name}, ${i.country}`, value: { lat: i.lat, lon: i.lon } }])
-      })
+      await getGeolocation()
     }
+  }
+
+  const handleGeolocationBtn = async () => {
+    if (city.length === 0) {
+      return;
+    }
+    setResults([])
+    await getGeolocation()
   }
 
   const handleClick = async (lat: number, lon: number) => {
@@ -71,17 +83,20 @@ function App() {
   }
 
   return (
-    <Flex justify={"center"} backgroundSize={"cover"} backgroundPosition={"center"} w={"100%"} minH={"100vh"} backgroundImage={getBackgroundImage() || Bck}>
+    <Flex justify={"center"} backgroundSize={"cover"} backgroundPosition={"center"} w={"100%"} minH={"100vh"} backgroundImage={getBackgroundImage()}>
       <Flex p={2} gap={5} w={["90%", "50%"]} textAlign={"center"} flexDir={"column"}>
-        <Heading textShadow={" 4px 4px 8px rgba(66, 68, 90, 1)"} size={["lg", "xl"]} fontWeight={"bold"}>React weather application</Heading>
+        <Box p={1} backgroundColor={"rgba(51, 51, 51, 0.8)"}>
+          <Heading size={["lg", "xl"]} fontWeight={"medium"}>React weather application</Heading>
+        </Box>
         <InputGroup flexDir={"column"}>
-          <InputGroup>
-            <InputLeftElement children={<FaSearch />} />
-            <Input onChange={(e) => setCity(e.target.value)} onKeyDown={getGeolocation} backgroundColor={"rgba(51, 51, 51, 0.7)"} placeholder={"City name..."} />
-            <Select onChange={handleMetric} backgroundColor={"rgba(51, 51, 51, 0.7)"} w={["80%", "55%", "25%"]}>
+          <InputGroup gap={1}>
+            <InputLeftElement children={<IoLocationOutline />} />
+            <Input variant={"outlined"} onChange={(e) => setCity(e.target.value)} onKeyDown={handleGeolocationEnter} backgroundColor={"rgba(51, 51, 51, 0.8)"} placeholder={"City name..."} />
+            <Select variant={"outlined"} onChange={handleMetric} backgroundColor={"rgba(51, 51, 51, 0.8)"} w={["80%", "55%", "25%"]}>
               <option value={"true"}>&deg;C</option>
               <option value={"false"}>&deg;F</option>
             </Select>
+            <IconButton onClick={handleGeolocationBtn} backgroundColor={"rgba(51, 51, 51, 0.8)"} aria-label="search" icon={<FaSearch />} />
           </InputGroup>
           {results && results.length !== 0 ?
             <VStack boxShadow={"lg"} p={2} maxH={"40vh"} overflowY={"auto"} gap={0} mt={3} divider={<StackDivider />} backgroundColor={"rgba(51, 51, 51, 1)"}>
